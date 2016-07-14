@@ -35,7 +35,7 @@ int main(int argc, const char** argv)
 
 		Detect(filename, filepath);
 		
-		filename = "images/Markable/" + filename;
+		filename = "images/Marked_" + filename;
 		imwrite(filename, source);
 	}
 	return 0;
