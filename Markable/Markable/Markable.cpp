@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <Windows.h>
 
 using namespace std;
 using namespace cv;
@@ -19,20 +20,55 @@ int lowThreshold;
 int const max_lowThreshold = 100;
 int ratio = 3;
 int kernel_size = 3;
-RNG rng(12345);
+vector<vector<Point>> contours;
+
+vector<wstring> get_all_files_names_within_folder(string);
+void Detect(string, string);
 
 int main(int argc, const char** argv)
 {
-	source = imread("6.jpg", CV_LOAD_IMAGE_ANYCOLOR);
+	auto files = get_all_files_names_within_folder("images");
+	for each(auto file in files)
+	{
+		string filename(file.begin(), file.end());
+		string filepath = "images/" + filename;
+
+		Detect(filename, filepath);
+		
+		filename = "images/Markable/" + filename;
+		imwrite(filename, source);
+	}
+	return 0;
+}
+
+vector<wstring> get_all_files_names_within_folder(string folder)
+{
+	vector<wstring> names;
+	string search_path = folder + "/*.*";
+	WIN32_FIND_DATA fd;
+	wstring stemp(search_path.begin(), search_path.end());
+	HANDLE hFind = ::FindFirstFile(stemp.c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				names.push_back(fd.cFileName);
+			}
+		} while (::FindNextFile(hFind, &fd));
+		::FindClose(hFind);
+	}
+	return names;
+}
+
+void Detect(string filename, string filepath)
+{
+	source = imread(filepath, CV_LOAD_IMAGE_ANYCOLOR);
 	dst.create(source.size(), source.type());
 	cvtColor(source, source_gray, CV_BGR2GRAY);
-	namedWindow(window_name, CV_WINDOW_AUTOSIZE);
 
 	blur(source_gray, detected_edges, Size(3, 3));
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
 	Canny(detected_edges, detected_edges, 80, 80 * ratio, kernel_size);
-	findContours(detected_edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(detected_edges, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+	cout << "Processing " << filename << "...\t" << contours.size() << endl;
 
 	int x_max = 0;
 	int y_max = 0;
@@ -40,25 +76,18 @@ int main(int argc, const char** argv)
 	int y_min = contours[0][0].y;
 	for each (auto contour in contours)
 	{
-		for each (Point pnt in contour)
+		for each (auto point in contour)
 		{
-			if (x_max < pnt.x)
-				x_max = pnt.x;
-			if (y_max < pnt.y)
-				y_max = pnt.y;
-			if (x_min > pnt.x)
-				x_min = pnt.x;
-			if (y_min > pnt.y)
-				y_min = pnt.y;
+			if (x_max < point.x)
+				x_max = point.x;
+			if (y_max < point.y)
+				y_max = point.y;
+			if (x_min > point.x)
+				x_min = point.x;
+			if (y_min > point.y)
+				y_min = point.y;
 		}
 	}
 
 	rectangle(source, Rect(x_min, y_min, x_max - x_min, y_max - y_min), Scalar(0, 255, 0), 2);
-	imshow(window_name, source);
-
-	while (true)
-	{
-		if(waitKey(20) == 0) break;
-	}
-	return 0;
 }

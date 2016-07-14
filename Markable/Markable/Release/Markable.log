@@ -1,7 +1,6 @@
-﻿  Markable.cpp
-  Создание кода
-  1 of 244 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  Создание кода завершено
+﻿  stdafx.cpp
+  Markable.cpp
+  Markable.obj : найден .netmodule MSIL или модуль, откомпилированный с параметром /GL; перезапускается компоновка с параметром /LTCG; добавьте /LTCG в командную строку компоновки для повышения производительности компоновщика
+  ╤ючфрэшх ъюфр
+  ╤ючфрэшх ъюфр чртхЁ°хэю
   Markable.vcxproj -> C:\Work\Markable\Markable\Release\Markable.exe
