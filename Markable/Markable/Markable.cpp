@@ -38,6 +38,7 @@ int main(int argc, const char** argv)
 		filename = "images/Marked_" + filename;
 		imwrite(filename, source);
 	}
+	cout << "Done." << endl;
 	return 0;
 }
 
